@@ -16,7 +16,7 @@ class CreateTelegramActionCommand extends Command
     public function handle(): void
     {
         $input = trim($this->argument('name'), '/');
-        $key = $this->argument('key') ?? Str::random();
+        $key = $this->argument('key') ?? Str::random(24);
         $className = class_basename($input);
         $relativePath = dirname($input);
 

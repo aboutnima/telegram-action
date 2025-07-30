@@ -5,6 +5,7 @@ namespace Aboutnima\Telegram\Actions;
 use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
 use Aboutnima\Telegram\Facades\TelegramAction;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 /**
@@ -13,12 +14,10 @@ use Telegram\Bot\Laravel\Facades\Telegram;
  */
 abstract class BaseTelegramAction implements BaseTelegramActionInterface
 {
-    protected string $key;
-
     /**
-     * Telegram chat ID to send the message to.
+     * Action identifier
      */
-    private int $chatId;
+    protected string $key;
 
     /**
      * Indicates whether the message sent by this action should be deleted
@@ -27,42 +26,25 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     protected bool $deleteOnNextAction;
 
     /**
+     * Automatically set to true when a payload is set for the next action.
+     */
+    private ?string $nextActionKeyNameWithPayload = null;
+
+    /**
+     * Stores the payload received from the previous action.
+     */
+    private array $payload = [];
+
+    /**
      * Get the action key.
      */
     public function getKey(): string
     {
-        return $this->key;
-    }
+        if (is_null($this->nextActionKeyNameWithPayload)) {
+            return $this->key;
+        }
 
-    /**
-     * Set payload for next action
-     */
-    public function setPayload(array $payload): void
-    {
-        TelegramAction::updateCache([
-            'payload' => [
-                ...TelegramAction::getCache()['payload'],
-                $this->getKey() => $payload,
-            ],
-        ]);
-    }
-
-    /**
-     * Retrieve key and set payload
-     */
-    public function getKeyAndSetPayload(array $payload): string
-    {
-        $this->setPayload($payload);
-
-        return $this->getKey();
-    }
-
-    /**
-     * Set the chat ID.
-     */
-    public function setChatId(int $chatId): void
-    {
-        $this->chatId = $chatId;
+        return $this->nextActionKeyNameWithPayload;
     }
 
     /**
@@ -70,7 +52,7 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
      */
     public function getChatId(): int
     {
-        return $this->chatId;
+        return TelegramAction::getChatId();
     }
 
     /**
@@ -79,6 +61,34 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     public function getDeleteOnNextAction(): bool
     {
         return $this->deleteOnNextAction;
+    }
+
+    /**
+     * Set the current payload.
+     */
+    public function setPayload(array $payload): void
+    {
+        $this->payload = $payload;
+    }
+
+    /**
+     * Get the current payload.
+     */
+    public function getPayload(): array
+    {
+        return $this->payload;
+    }
+
+    /**
+     * Set payload for next action
+     */
+    public function setNextActionPayload(array $payload): self
+    {
+        $newKeyName = TelegramAction::putPayloadCache($this->key, $payload);
+
+        $this->nextActionKeyNameWithPayload = $newKeyName;
+
+        return $this;
     }
 
     /**

@@ -15,21 +15,6 @@ interface BaseTelegramActionInterface
     public function getKey(): string;
 
     /**
-     * Set payload for next action
-     */
-    public function setPayload(array $payload): void;
-
-    /**
-     * Retrieve key and set payload
-     */
-    public function getKeyAndSetPayload(array $payload): string;
-
-    /**
-     * Set the chat ID for this action.
-     */
-    public function setChatId(int $chatId): void;
-
-    /**
      * Get the chat ID associated with this action.
      */
     public function getChatId(): int;
@@ -38,6 +23,21 @@ interface BaseTelegramActionInterface
      * Get deleteOnNextAction value
      */
     public function getDeleteOnNextAction(): bool;
+
+    /**
+     * Set the current payload.
+     */
+    public function setPayload(array $payload): void;
+
+    /**
+     * Get the current payload.
+     */
+    public function getPayload(): array;
+
+    /**
+     * Set payload for next action
+     */
+    public function setNextActionPayload(array $payload): self;
 
     /**
      * Get the message text to send to the Telegram bot.

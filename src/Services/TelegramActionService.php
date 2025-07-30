@@ -29,6 +29,9 @@ final class TelegramActionService
      */
     private array $actions = [];
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $this->loadActions();
@@ -123,13 +126,15 @@ final class TelegramActionService
      *
      * @throws \InvalidArgumentException if no action is found for the given key.
      */
-    public function callAction(string $key): mixed
+    public function callAction(string $key, ?string $payloadKey): mixed
     {
+        // Check if action is exists
         if (! isset($this->actions[$key])) {
             throw new \InvalidArgumentException("No registered Telegram action for key: '{$key}'.");
         }
 
-        $previousState = Cache::get($this->getChatId());
+        // Load previous state
+        $previousState = $this->getCache();
 
         if ($previousState) {
             $previousAction = app($this->actions[$previousState['action_key']]);
@@ -141,9 +146,14 @@ final class TelegramActionService
             }
         }
 
-        /** @var BaseTelegramActionInterface $action */
+        /**
+         * Load action
+         * @var BaseTelegramActionInterface $action
+         */
         $action = app($this->actions[$key]);
-        $action->setChatId($this->getChatId());
+
+        // Set payload if exists for action
+        $action->setPayload($this->getPayloadCache($payloadKey));
 
         return $action->handle();
     }
@@ -187,6 +197,30 @@ final class TelegramActionService
     }
 
     /**
+     * Store the given payload in cache for the next chat action.
+     */
+    public function putPayloadCache(string $key, array $payload): string
+    {
+        $payloadCacheKeyName = Str::random(24);
+
+        Cache::put($payloadCacheKeyName, $payload, now()->addMinutes(5));
+
+        return $key . ':' . $payloadCacheKeyName;
+    }
+
+    /**
+     * Retrieve the cached payload for the current chat action.
+     */
+    public function getPayloadCache(?string $key): array
+    {
+        if (blank($key)) {
+            return [];
+        }
+
+        return Cache::get($key, []);
+    }
+
+    /**
      * Handle an incoming Telegram update.
      *
      * @param  Update  $update  The update object from Telegram webhook.
@@ -194,6 +228,7 @@ final class TelegramActionService
     public function handleRequest(Update $update): void
     {
         $actionKey = '';
+        $payloadKey = null;
 
         $message = $update->getMessage();
         $callback = $update->getCallbackQuery();
@@ -203,15 +238,17 @@ final class TelegramActionService
         if ($text === '/start') {
             $actionKey = 'start';
         } else if ($callback) {
-            $actionKey = $callback->getData();
+            $data = $callback->getData();
+            [$actionKey, $payloadKey] = array_pad(explode(':', $data, 2), 2, null);
         }
 
-        $response = $this->callAction($actionKey);
+        if (! blank($actionKey)) {
+            $response = $this->callAction($actionKey, $payloadKey);
 
-        $this->putCache([
-            'message_id' => $response->getMessageId(),
-            'action_key' => $actionKey,
-            'payload' => []
-        ]);
+            $this->putCache([
+                'message_id' => $response->getMessageId(),
+                'action_key' => $actionKey,
+            ]);
+        }
     }
 }

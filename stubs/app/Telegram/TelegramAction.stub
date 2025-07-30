@@ -19,21 +19,12 @@ final class {{ class }} extends BaseTelegramAction
     protected bool $deleteOnNextAction = false;
 
     /**
-     * Get the action key.
-     */
-    public function getKey(): string
-    {
-        return $this->key;
-    }
-
-    /**
      * Get the message text for this action.
      */
     public function message(): string
     {
         return '{{ message }}';
     }
-
 
     /**
      * Get the reply markup for this action.
