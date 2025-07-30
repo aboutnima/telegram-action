@@ -26,6 +26,7 @@ class CreateTelegramActionCommand extends Command
         // Prevent overwriting existing classes
         if (File::exists($fullPath)) {
             $this->error("❌ {$className} already exists at: {$fullPath}");
+
             return;
         }
 
@@ -46,7 +47,7 @@ class CreateTelegramActionCommand extends Command
         File::put($fullPath, $content);
 
         // Show success message
-        $this->info("✅ {$className} created at: " . Str::of($fullPath)->after(base_path() . '/'));
+        $this->info("✅ {$className} created at: ".Str::of($fullPath)->after(base_path().'/'));
     }
 
     /**
@@ -57,7 +58,7 @@ class CreateTelegramActionCommand extends Command
         $namespace = 'App\\Telegram';
 
         if ($relativePath !== '.' && $relativePath !== '') {
-            $namespace .= '\\' . str_replace(['/', '\\'], '\\', $relativePath);
+            $namespace .= '\\'.str_replace(['/', '\\'], '\\', $relativePath);
         }
 
         return $namespace;
@@ -68,12 +69,13 @@ class CreateTelegramActionCommand extends Command
      */
     protected function buildTargetPath(string $input): string
     {
-        return app_path('Telegram/' . str_replace('\\', '/', $input) . '.php');
+        return app_path('Telegram/'.str_replace('\\', '/', $input).'.php');
     }
 
     /**
      * Load the stub file for generating the action class.
      * Falls back to package stub if no published stub is found.
+     *
      * @throws FileNotFoundException
      */
     protected function loadStub(): string
@@ -82,7 +84,7 @@ class CreateTelegramActionCommand extends Command
         $published = base_path('stubs/app/Telegram/TelegramAction.stub');
 
         // Path to package's internal default stub
-        $package = __DIR__ . '/../../stubs/app/Telegram/TelegramAction.stub';
+        $package = __DIR__.'/../../stubs/app/Telegram/TelegramAction.stub';
 
         if (File::exists($published)) {
             return File::get($published);
@@ -92,6 +94,6 @@ class CreateTelegramActionCommand extends Command
             return File::get($package);
         }
 
-        throw new FileNotFoundException("TelegramAction.stub not found in published or package path.");
+        throw new FileNotFoundException('TelegramAction.stub not found in published or package path.');
     }
 }

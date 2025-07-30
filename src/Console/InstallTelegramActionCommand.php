@@ -54,6 +54,7 @@ class InstallTelegramActionCommand extends Command
 
         if (File::exists($actionPath)) {
             $this->warn('⚠️ StartAction already exists, skipped.');
+
             return;
         }
 
@@ -61,7 +62,7 @@ class InstallTelegramActionCommand extends Command
 
         Artisan::call('telegram:create-action', [
             'name' => 'StartAction',
-            'key' => 'start'
+            'key' => 'start',
         ]);
 
         $this->info('✅ StartAction created at /app/Telegram');

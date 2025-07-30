@@ -2,8 +2,8 @@
 
 namespace Aboutnima\Telegram;
 
-use Illuminate\Support\ServiceProvider;
 use Aboutnima\Telegram\Services\TelegramActionService;
+use Illuminate\Support\ServiceProvider;
 
 class TelegramActionServiceProvider extends ServiceProvider
 {
@@ -13,7 +13,7 @@ class TelegramActionServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/telegram-action.php', 'telegram-action');
 
         // Register the TelegramAction singleton and define TokenManager class with data
-        $this->app->singleton('telegram-action', fn (): TelegramActionService => new TelegramActionService());
+        $this->app->singleton('telegram-action', fn (): TelegramActionService => new TelegramActionService);
     }
 
     public function boot(): void

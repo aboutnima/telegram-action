@@ -4,16 +4,26 @@ declare(strict_types=1);
 
 namespace Aboutnima\Telegram\Services;
 
-use Illuminate\Support\Str;
-use Telegram\Bot\Objects\Update;
 use Aboutnima\Telegram\Contracts\TelegramActionInterface;
+use Illuminate\Support\Str;
 use ReflectionClass;
+use Telegram\Bot\Objects\Update;
 
+/**
+ * Service to manage and dispatch Telegram bot actions.
+ */
 final class TelegramActionService
 {
+    /**
+     * Current chat ID extracted from the incoming update.
+     */
     private ?int $chatId = null;
 
-    /** @var array<string, class-string<TelegramActionInterface>> */
+    /**
+     * Registered Telegram action classes indexed by their unique keys.
+     *
+     * @var array<string, class-string<TelegramActionInterface>>
+     */
     private array $actions = [];
 
     public function __construct()
@@ -21,48 +31,71 @@ final class TelegramActionService
         $this->loadActions();
     }
 
+    /**
+     * Return the current instance — useful as a default or fluent accessor.
+     */
     public function default(): self
     {
         return $this;
     }
 
+    /**
+     * Get the current chat ID.
+     *
+     * @throws \RuntimeException if chat ID is not set.
+     */
     public function getChatId(): int
     {
         if ($this->chatId === null) {
-            throw new \RuntimeException("Chat ID has not been set.");
+            throw new \RuntimeException('Chat ID has not been set before calling getChatId().');
         }
 
         return $this->chatId;
     }
 
     /**
-     * Dynamically find all actions in app/Telegram and map them by their key
+     * Handle an incoming Telegram update.
+     *
+     * @param  Update  $update  The update object from Telegram webhook.
      */
-    private function loadActions(): void
+    public function handleRequest(Update $update): void
     {
-        $actionPath = app_path('Telegram');
-        $namespace = 'App\\Telegram';
+        $message = $update->getMessage();
+        $this->chatId = $message->getChat()->getId();
 
-        foreach (glob($actionPath . '/*.php') as $file) {
-            $className = $namespace . '\\' . Str::replaceLast('.php', '', basename($file));
+        $text = $message->getText();
 
-            if (!class_exists($className)) {
-                continue;
-            }
-
-            $reflection = new ReflectionClass($className);
-            if (! $reflection->isInstantiable() || ! $reflection->implementsInterface(TelegramActionInterface::class)) {
-                continue;
-            }
-
-            /** @var TelegramActionInterface $instance */
-            $instance = app($className);
-            $this->actions[$instance->key()] = $className;
+        if ($text === '/start') {
+            $this->callAction('start');
         }
+
+        // Add more command mappings here if needed.
     }
 
     /**
-     * Get the registered actions (mostly for debugging)
+     * Call a registered action by its key.
+     *
+     * @param  string  $key  The unique key of the action.
+     *
+     * @throws \InvalidArgumentException if no action is found for the given key.
+     */
+    public function callAction(string $key): void
+    {
+        if (! isset($this->actions[$key])) {
+            throw new \InvalidArgumentException("No registered Telegram action for key: '{$key}'.");
+        }
+
+        /** @var TelegramActionInterface $action */
+        $action = app($this->actions[$key]);
+
+        $action->setChatId($this->getChatId());
+        $action->handle();
+    }
+
+    /**
+     * Return all registered actions (mostly useful for debugging or introspection).
+     *
+     * @return array<string, class-string<TelegramActionInterface>>
      */
     public function actions(): array
     {
@@ -70,29 +103,33 @@ final class TelegramActionService
     }
 
     /**
-     * Call an action by its key
+     * Load and register all Telegram actions from the app/Telegram directory.
+     * Actions must implement the TelegramActionInterface and be instantiable.
      */
-    public function callAction(string $key): void
+    private function loadActions(): void
     {
-        if (!isset($this->actions[$key])) {
-            throw new \InvalidArgumentException("No action found for key [$key]");
-        }
+        $actionPath = app_path('Telegram');
+        $namespace = 'App\\Telegram';
 
-        $action = app($this->actions[$key]);
+        foreach (glob($actionPath.'/*.php') as $file) {
+            $className = $namespace.'\\'.Str::replaceLast('.php', '', basename($file));
 
-        $action->handle();
-    }
+            if (! class_exists($className)) {
+                continue;
+            }
 
-    public function handleRequest(Update $update): void
-    {
-        $message = $update->getMessage();
+            $reflection = new ReflectionClass($className);
+            if (! $reflection->isInstantiable()) {
+                continue;
+            }
+            if (! $reflection->implementsInterface(TelegramActionInterface::class)) {
+                continue;
+            }
 
-        $this->chatId = $message->getChat()->getId();
+            /** @var TelegramActionInterface $instance */
+            $instance = app($className);
 
-        $text = $message->getText();
-
-        if ($text === '/start') {
-            $this->callAction('start');
+            $this->actions[$instance->key()] = $className;
         }
     }
 }
