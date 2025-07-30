@@ -9,7 +9,7 @@ use Telegram\Bot\Laravel\Facades\Telegram;
  * Base class for all Telegram actions.
  * Provides default implementations for message sending settings.
  */
-abstract class BaseBaseTelegramAction implements BaseTelegramActionInterface
+abstract class BaseTelegramAction implements BaseTelegramActionInterface
 {
     protected string $key;
 
@@ -23,6 +23,14 @@ abstract class BaseBaseTelegramAction implements BaseTelegramActionInterface
      * before the next action is executed
      */
     protected bool $deleteOnNextAction;
+
+    /**
+     * Get the action key.
+     */
+    public function getKey(): string
+    {
+        return $this->key;
+    }
 
     /**
      * Set the chat ID.
