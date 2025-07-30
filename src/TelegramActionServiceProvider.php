@@ -1,9 +1,9 @@
 <?php
 
-namespace Aboutnima\LaravelZoom;
+namespace Aboutnima\TelegramAction;
 
-use Aboutnima\LaravelZoom\Auth\ZoomTokenManager;
-use Aboutnima\LaravelZoom\Services\TelegramActionService;
+use Aboutnima\TelegramAction\Auth\ZoomTokenManager;
+use Aboutnima\TelegramAction\Services\TelegramActionService;
 use Illuminate\Support\ServiceProvider;
 
 class TelegramActionServiceProvider extends ServiceProvider

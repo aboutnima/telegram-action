@@ -32,7 +32,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Aboutnima\\TelegramAction\\LaravelZoomServiceProvider"
+                "Aboutnima\\TelegramAction\\TelegramActionServiceProvider"
             ],
             "aliases": {
                 "Zoom": "Aboutnima\\TelegramAction\\Facades\\Zoom"

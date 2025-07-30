@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Aboutnima\LaravelZoom\Services;
+namespace Aboutnima\TelegramAction\Services;
 
-use Aboutnima\LaravelZoom\Auth\ZoomTokenManager;
-use Aboutnima\LaravelZoom\Contracts\Services\ZoomServiceInterface;
-use Aboutnima\LaravelZoom\Exceptions\ZoomException;
+use Aboutnima\TelegramAction\Auth\ZoomTokenManager;
+use Aboutnima\TelegramAction\Contracts\Services\ZoomServiceInterface;
+use Aboutnima\TelegramAction\Exceptions\ZoomException;
 use Closure;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;

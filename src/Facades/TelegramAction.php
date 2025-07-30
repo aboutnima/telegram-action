@@ -1,6 +1,6 @@
 <?php
 
-namespace Aboutnima\LaravelZoom\Facades;
+namespace Aboutnima\TelegramAction\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

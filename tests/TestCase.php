@@ -19,14 +19,14 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
-            \Aboutnima\LaravelZoom\TelegramActionServiceProvider::class,
+            \Aboutnima\TelegramAction\TelegramActionServiceProvider::class,
         ];
     }
 
     protected function getPackageAliases($app): array
     {
         return [
-            'Zoom' => \Aboutnima\LaravelZoom\Facades\Zoom::class,
+            'TelegramAction' => \Aboutnima\TelegramAction\Facades\TelegramAction::class,
         ];
     }
 
