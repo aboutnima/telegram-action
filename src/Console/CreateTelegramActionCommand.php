@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class CreateTelegramActionCommand extends Command
 {
-    protected $signature = 'telegram:create-action {name} {key?}';
+    protected $signature = 'telegram-action:create-action {name} {key?}';
 
     protected $description = 'Create a new Telegram action class';
 
