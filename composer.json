@@ -1,0 +1,69 @@
+{
+    "name": "aboutnima/telegram-action",
+    "description": "A Laravel package for building modular Telegram bots using action-based architecture. Define bot actions with unique keys, generate them via Artisan commands, and handle inline keyboard callbacks with ease.",
+    "type": "library",
+    "version": "0.1.1-beta",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nima Asaadi",
+            "email": "aboutnima@icloud.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3.0",
+        "illuminate/support": "^11.0|^12.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.18.1",
+        "orchestra/testbench": "^10.2",
+        "pestphp/pest": "^3.5.1",
+        "pestphp/pest-plugin-type-coverage": "^3.1",
+        "phpstan/phpstan": "^1.12.7",
+        "rector/rector": "^1.2.8",
+        "symfony/var-dumper": "^7.1.6",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aboutnima\\TelegramAction\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aboutnima\\TelegramAction\\LaravelZoomServiceProvider"
+            ],
+            "aliases": {
+                "Zoom": "Aboutnima\\TelegramAction\\Facades\\Zoom"
+            }
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "refactor": "rector",
+        "lint": "pint",
+        "test:refactor": "rector --dry-run",
+        "test:lint": "pint --test",
+        "test:types": "phpstan analyse --ansi",
+        "test:unit": "pest --colors=always --coverage --parallel --min=100",
+        "test": [
+            "@test:refactor",
+            "@test:lint",
+            "@test:unit"
+        ]
+    }
+}
