@@ -2,6 +2,8 @@
 
 namespace Aboutnima\Telegram\Contracts;
 
+use Telegram\Bot\Keyboard\Keyboard;
+
 /**
  * Interface that defines the contract for a Telegram action handler.
  */
@@ -31,11 +33,11 @@ interface TelegramActionInterface
      * Get the message text to send to the Telegram bot.
      * Return null if no message should be sent.
      */
-    public function message(): ?string;
+    public function message(): string;
 
     /**
      * Get the reply markup (e.g., keyboard or inline buttons) to send.
      * Return null if no markup is needed.
      */
-    public function replyMarkup(): ?array;
+    public function replyMarkup();
 }

@@ -61,12 +61,16 @@ final class TelegramActionService
     public function handleRequest(Update $update): void
     {
         $message = $update->getMessage();
+        $callback = $update->getCallbackQuery();
         $this->chatId = $message->getChat()->getId();
-
         $text = $message->getText();
+
+
 
         if ($text === '/start') {
             $this->callAction('start');
+        } else if ($callback) {
+            $this->callAction($callback->getData());
         }
 
         // Add more command mappings here if needed.
@@ -90,6 +94,25 @@ final class TelegramActionService
 
         $action->setChatId($this->getChatId());
         $action->handle();
+    }
+
+    /**
+     * Get the registered action key for the given action class name.
+     *
+     * @param  class-string<TelegramActionInterface>  $class
+     * @return string
+     *
+     * @throws \InvalidArgumentException if the class is not registered.
+     */
+    public function getActionKey(string $class): string
+    {
+        $key = array_search($class, $this->actions, true);
+
+        if ($key === false) {
+            throw new \InvalidArgumentException("Action class '{$class}' is not registered.");
+        }
+
+        return $key;
     }
 
     /**

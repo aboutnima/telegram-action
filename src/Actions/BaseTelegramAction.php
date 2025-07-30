@@ -3,6 +3,7 @@
 namespace Aboutnima\Telegram\Actions;
 
 use Aboutnima\Telegram\Contracts\TelegramActionInterface;
+use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 /**
@@ -36,16 +37,16 @@ abstract class BaseTelegramAction implements TelegramActionInterface
      * Get the message text to send.
      * Override this method to customize the message.
      */
-    public function message(): ?string
+    public function message(): string
     {
-        return null;
+        return '';
     }
 
     /**
      * Get the reply markup (e.g., inline keyboard).
      * Override this method to customize the markup.
      */
-    public function replyMarkup(): ?array
+    public function replyMarkup()
     {
         return null;
     }
