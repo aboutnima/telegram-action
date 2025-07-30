@@ -7,15 +7,20 @@ interface TelegramActionInterface
     /**
      * Get the unique key of the action.
      */
-    public static function key(): string;
+    public function key(): string;
 
     /**
      * Get the message text for the Telegram bot to send.
-     */
-    public static function text(): string;
+     * */
+    public function message(): string|null;
 
     /**
-     * Handle the incoming Telegram update.
+     * Get the reply markup for the Telegram bot to send.
      */
-    public function handle(mixed $update): void;
+    public function replyMarkup(): array|null;
+
+    /**
+     * Handle action
+     */
+    public function handle(): void;
 }

@@ -37,7 +37,7 @@ class CreateTelegramActionCommand extends Command
 
         // Replace placeholders in the stub
         $content = str_replace(
-            ['{{ namespace }}', '{{ class }}', '{{ key }}', '{{ text }}'],
+            ['{{ namespace }}', '{{ class }}', '{{ key }}', '{{ message }}'],
             [$namespace, $className, $key ?? Str::random(), 'Message text.'],
             $stub
         );

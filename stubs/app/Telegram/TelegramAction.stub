@@ -2,45 +2,24 @@
 
 namespace {{ namespace }};
 
-use Aboutnima\Telegram\Contracts\TelegramActionInterface;
+use Aboutnima\Telegram\Actions\BaseTelegramAction;
 
-final class {{ class }} implements TelegramActionInterface
+final class {{ class }} extends BaseTelegramAction
 {
     /**
      * The unique key of this action.
      * Used to link this action to other actions via callback_data.
      */
-    private static string $key = '{{ key }}';
-
-    /**
-     * The message text that the Telegram bot will send when this action is triggered.
-     */
-    private static string $text = '{{ text }}';
-
-    /**
-     * Get the unique key of the action.
-     */
-    public static function key(): string
+    public function key(): string
     {
-        return self::$key;
+        return '{{ key }}';
     }
 
     /**
      * Get the message text for this action.
      */
-    public static function text(): string
+    public function message(): string
     {
-        return self::$text;
-    }
-
-    /**
-     * Handle the incoming Telegram update.
-     *
-     * @param mixed $update
-     * @return void
-     */
-    public function handle($update): void
-    {
-        // Handle update
+        return '{{ message }}';
     }
 }

@@ -10,4 +10,14 @@ final readonly class TelegramActionService
     {
         return $this;
     }
+
+    public function getChatId(): int
+    {
+        return 0;
+    }
+
+    public function handleRequest($update): void
+    {
+
+    }
 }
