@@ -7,12 +7,12 @@ interface TelegramActionInterface
     /**
      * Get the unique key of the action.
      */
-    public function key(): string;
+    public static function key(): string;
 
     /**
      * Get the message text for the Telegram bot to send.
      */
-    public function text(): string;
+    public static function text(): string;
 
     /**
      * Handle the incoming Telegram update.

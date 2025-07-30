@@ -52,6 +52,7 @@ class InstallTelegramActionCommand extends Command
 
         Artisan::call('telegram:create-action', [
             'name' => 'StartAction',
+            'key' => 'start'
         ]);
 
         $this->info('✅ StartAction created at /app/Telegram');

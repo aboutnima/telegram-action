@@ -9,13 +9,14 @@ use Illuminate\Support\Str;
 
 class CreateTelegramActionCommand extends Command
 {
-    protected $signature = 'telegram:create-action {name}';
+    protected $signature = 'telegram:create-action {name} {key?}';
 
     protected $description = 'Create a new Telegram action class';
 
     public function handle(): void
     {
         $input = trim($this->argument('name'), '/');
+        $key = $this->argument('key') ?? Str::random();
         $className = class_basename($input);
         $relativePath = dirname($input);
 
@@ -37,7 +38,7 @@ class CreateTelegramActionCommand extends Command
         // Replace placeholders in the stub
         $content = str_replace(
             ['{{ namespace }}', '{{ class }}', '{{ key }}', '{{ text }}'],
-            [$namespace, $className, Str::random(), 'Message text.'],
+            [$namespace, $className, $key ?? Str::random(), 'Message text.'],
             $stub
         );
 

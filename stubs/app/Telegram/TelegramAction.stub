@@ -10,27 +10,27 @@ final class {{ class }} implements TelegramActionInterface
      * The unique key of this action.
      * Used to link this action to other actions via callback_data.
      */
-    protected string $key = '{{ key }}';
+    private static string $key = '{{ key }}';
 
     /**
      * The message text that the Telegram bot will send when this action is triggered.
      */
-    protected string $text = '{{ text }}';
+    private static string $text = '{{ text }}';
 
     /**
      * Get the unique key of the action.
      */
-    public function key(): string
+    public static function key(): string
     {
-        return $this->key;
+        return self::$key;
     }
 
     /**
      * Get the message text for this action.
      */
-    public function text(): string
+    public static function text(): string
     {
-        return $this->text;
+        return self::$text;
     }
 
     /**
