@@ -10,7 +10,7 @@ final class {{ class }} extends BaseTelegramAction
      * Indicates whether the message sent by this action should be deleted
      * before the next action is executed.
      */
-    public bool $deleteOnNextAction = true;
+    protected bool $deleteOnNextAction = false;
 
     /**
      * The unique key of this action.

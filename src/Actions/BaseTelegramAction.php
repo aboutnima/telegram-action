@@ -20,7 +20,7 @@ abstract class BaseTelegramAction implements TelegramActionInterface
      * Indicates whether the message sent by this action should be deleted
      * before the next action is executed
      */
-    public bool $deleteOnNextAction = false;
+    protected bool $deleteOnNextAction;
 
     /**
      * Set the chat ID.
