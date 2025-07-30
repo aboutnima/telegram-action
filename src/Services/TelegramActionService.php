@@ -132,7 +132,7 @@ final class TelegramActionService
 
         if ($previousState) {
             $previousAction = app($this->actions[$previousState['action_key']]);
-            if ($previousAction->deleteOnNextAction) {
+            if ($previousAction->getDeleteOnNextAction()) {
                 Telegram::deleteMessage([
                     'chat_id' => $this->getChatId(),
                     'message_id' => $previousState['message_id'],

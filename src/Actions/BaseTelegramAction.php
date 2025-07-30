@@ -39,6 +39,14 @@ abstract class BaseTelegramAction implements TelegramActionInterface
     }
 
     /**
+     * Get deleteOnNextAction value
+     */
+    public function getDeleteOnNextAction(): bool
+    {
+        return $this->deleteOnNextAction;
+    }
+
+    /**
      * Get the message text to send.
      * Override this method to customize the message.
      */
