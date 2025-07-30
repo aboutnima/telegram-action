@@ -26,8 +26,8 @@ class TelegramActionServiceProvider extends ServiceProvider
         // Register commands
         if ($this->app->runningInConsole()) {
             $this->commands([
-                Commands\InstallTelegramActionCommand::class,
-                Commands\CreateTelegramActionCommand::class,
+                Console\InstallTelegramActionCommand::class,
+                Console\CreateTelegramActionCommand::class,
             ]);
         }
     }

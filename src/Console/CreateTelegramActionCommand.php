@@ -1,6 +1,6 @@
 <?php
 
-namespace Aboutnima\Telegram\Commands;
+namespace Aboutnima\Telegram\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
