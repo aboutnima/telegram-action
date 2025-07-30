@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Aboutnima\Telegram\Services;
 
 use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -148,6 +149,44 @@ final class TelegramActionService
     }
 
     /**
+     * Store the given payload in cache for the current chat.
+     *
+     * This method completely replaces the existing cache for the current chat ID.
+     *
+     * @param array $payload The data to store in cache.
+     */
+    public function putCache(array $payload): void
+    {
+        Cache::put($this->getChatId(), $payload, now()->addMinutes(5));
+    }
+
+    /**
+     * Update the existing cached payload by merging it with the given payload.
+     *
+     * This will preserve previously stored data and only overwrite the keys
+     * that exist in the provided payload.
+     *
+     * @param array $payload The new data to merge into the cached payload.
+     */
+    public function updateCache(array $payload): void
+    {
+        $this->putCache([
+            ...$this->getCache(),
+            ...$payload
+        ]);
+    }
+
+    /**
+     * Retrieve the cached payload for the current chat.
+     *
+     * @return array The cached data. Returns an empty array if no data exists.
+     */
+    public function getCache(): array
+    {
+        return Cache::get($this->getChatId(), []);
+    }
+
+    /**
      * Handle an incoming Telegram update.
      *
      * @param  Update  $update  The update object from Telegram webhook.
@@ -169,9 +208,10 @@ final class TelegramActionService
 
         $response = $this->callAction($actionKey);
 
-        Cache::put($this->getChatId(), [
+        $this->putCache([
             'message_id' => $response->getMessageId(),
-            'action_key' => $actionKey
-        ], now()->addMinutes(5));
+            'action_key' => $actionKey,
+            'payload' => []
+        ]);
     }
 }

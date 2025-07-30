@@ -3,6 +3,8 @@
 namespace Aboutnima\Telegram\Actions;
 
 use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
+use Aboutnima\Telegram\Facades\TelegramAction;
+use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 /**
@@ -30,6 +32,29 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     public function getKey(): string
     {
         return $this->key;
+    }
+
+    /**
+     * Set payload for next action
+     */
+    public function setPayload(array $payload): void
+    {
+        TelegramAction::updateCache([
+            'payload' => [
+                ...TelegramAction::getCache()['payload'],
+                $this->getKey() => $payload,
+            ],
+        ]);
+    }
+
+    /**
+     * Retrieve key and set payload
+     */
+    public function getKeyAndSetPayload(array $payload): string
+    {
+        $this->setPayload($payload);
+
+        return $this->getKey();
     }
 
     /**
