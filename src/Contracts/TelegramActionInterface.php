@@ -39,5 +39,5 @@ interface TelegramActionInterface
      * Get the reply markup (e.g., keyboard or inline buttons) to send.
      * Return null if no markup is needed.
      */
-    public function replyMarkup();
+    public function replyMarkup(): mixed;
 }

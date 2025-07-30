@@ -22,4 +22,13 @@ final class {{ class }} extends BaseTelegramAction
     {
         return '{{ message }}';
     }
+
+
+    /**
+     * Get the reply markup for this action.
+     */
+    public function replyMarkup(): mixed
+    {
+        return null;
+    }
 }
