@@ -1,6 +1,6 @@
 <?php
 
-namespace Aboutnima\TelegramAction\Facades;
+namespace Aboutnima\Telegram\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

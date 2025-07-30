@@ -1,6 +1,6 @@
 <?php
 
-use Aboutnima\TelegramAction\Services\TelegramActionService;
+use Aboutnima\Telegram\Services\TelegramActionService;
 
 beforeEach(function (): void {
     // Create `TelegramActionService` instance

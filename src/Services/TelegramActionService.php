@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aboutnima\TelegramAction\Services;
+namespace Aboutnima\Telegram\Services;
 
 final readonly class TelegramActionService
 {

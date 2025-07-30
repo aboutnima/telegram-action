@@ -26,16 +26,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Aboutnima\\TelegramAction\\": "src/"
+            "Aboutnima\\Telegram\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Aboutnima\\TelegramAction\\TelegramActionServiceProvider"
+                "Aboutnima\\Telegram\\TelegramActionServiceProvider"
             ],
             "aliases": {
-                "TelegramAction": "Aboutnima\\TelegramAction\\Facades\\TelegramAction"
+                "TelegramAction": "Aboutnima\\Telegram\\Facades\\TelegramAction"
             }
         }
     },

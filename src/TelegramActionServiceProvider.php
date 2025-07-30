@@ -1,8 +1,8 @@
 <?php
 
-namespace Aboutnima\TelegramAction;
+namespace Aboutnima\Telegram;
 
-use Aboutnima\TelegramAction\Services\TelegramActionService;
+use Aboutnima\Telegram\Services\TelegramActionService;
 use Illuminate\Support\ServiceProvider;
 
 class TelegramActionServiceProvider extends ServiceProvider
