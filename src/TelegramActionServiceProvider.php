@@ -2,8 +2,8 @@
 
 namespace Aboutnima\Telegram;
 
-use Aboutnima\Telegram\Services\TelegramActionService;
 use Illuminate\Support\ServiceProvider;
+use Aboutnima\Telegram\Services\TelegramActionService;
 
 class TelegramActionServiceProvider extends ServiceProvider
 {
@@ -22,5 +22,13 @@ class TelegramActionServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/telegram-action.php' => config_path('telegram-action.php'),
         ], 'telegram-action-config');
+
+        // Register commands
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Commands\InstallTelegramActionCommand::class,
+                Commands\CreateTelegramActionCommand::class,
+            ]);
+        }
     }
 }
