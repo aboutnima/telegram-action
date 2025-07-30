@@ -4,7 +4,7 @@ use Aboutnima\Telegram\Services\TelegramActionService;
 
 beforeEach(function (): void {
     // Create `TelegramActionService` instance
-    $this->telegramAction = TelegramActionService::default();
+    $this->telegramAction = (new TelegramActionService)->default();
 });
 
 it('`TelegramAction` facade is correctly bound and returns an instance of TelegramActionService', function (): void {

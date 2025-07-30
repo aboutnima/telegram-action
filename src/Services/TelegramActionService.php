@@ -6,8 +6,6 @@ namespace Aboutnima\Telegram\Services;
 
 final readonly class TelegramActionService
 {
-    public function __construct() {}
-
     public function default(): self
     {
         return $this;
