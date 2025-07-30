@@ -14,6 +14,15 @@ abstract class BaseTelegramAction implements TelegramActionInterface
         $this->chatId = TelegramAction::getChatId();
     }
 
+    public function setChatId(int $chatId): void
+    {
+        $this->chatId = $chatId;
+    }
+
+    public function getChatId(): int {
+        return $this->chatId;
+    }
+
     /**
      * Override in child if message is needed.
      */
@@ -36,7 +45,7 @@ abstract class BaseTelegramAction implements TelegramActionInterface
     public function handle(): void
     {
         $payload = [
-            'chat_id' => $this->chatId,
+            'chat_id' => $this->getChatId(),
             'text'    => $this->message(),
         ];
 

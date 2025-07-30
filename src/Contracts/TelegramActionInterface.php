@@ -4,6 +4,10 @@ namespace Aboutnima\Telegram\Contracts;
 
 interface TelegramActionInterface
 {
+    public function getChatId(): int;
+
+    public function setChatId(int $chatId): void;
+
     /**
      * Get the unique key of the action.
      */

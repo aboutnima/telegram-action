@@ -26,7 +26,16 @@ class InstallTelegramActionCommand extends Command
      */
     protected function publishConfig(): void
     {
-        $this->info('📦 Publishing config...');
+        // Publish telegram sdk package config
+        $this->info('📦 Publishing telegram config...');
+
+        Artisan::call('vendor:publish', [
+            '--tag' => 'telegram-config',
+            '--force' => true,
+        ]);
+
+        // Publish telegram action package config
+        $this->info('📦 Publishing telegram action config...');
 
         Artisan::call('vendor:publish', [
             '--tag' => 'telegram-action-config',
