@@ -7,6 +7,12 @@ use Aboutnima\Telegram\Actions\BaseTelegramAction;
 final class {{ class }} extends BaseTelegramAction
 {
     /**
+     * Indicates whether the message sent by this action should be deleted
+     * before the next action is executed.
+     */
+    public bool $deleteOnNextAction = true;
+
+    /**
      * The unique key of this action.
      * Used to link this action to other actions via callback_data.
      */

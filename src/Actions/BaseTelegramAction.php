@@ -17,6 +17,12 @@ abstract class BaseTelegramAction implements TelegramActionInterface
     private int $chatId;
 
     /**
+     * Indicates whether the message sent by this action should be deleted
+     * before the next action is executed
+     */
+    public bool $deleteOnNextAction = false;
+
+    /**
      * Set the chat ID.
      */
     public function setChatId(int $chatId): void
@@ -53,17 +59,18 @@ abstract class BaseTelegramAction implements TelegramActionInterface
     /**
      * Handle the action: send the message and markup to Telegram.
      */
-    public function handle(): void
+    public function handle(): mixed
     {
         $payload = [
             'chat_id' => $this->getChatId(),
             'text' => $this->message(),
         ];
 
-        if (($markup = $this->replyMarkup()) !== null && ($markup = $this->replyMarkup()) !== []) {
+        $markup = $this->replyMarkup();
+        if (blank($markup) || (is_array($markup) && count($markup) === 0)) {
             $payload['reply_markup'] = $markup;
         }
 
-        Telegram::sendMessage($payload);
+        return Telegram::sendMessage($payload);
     }
 }

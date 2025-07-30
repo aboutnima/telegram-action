@@ -15,19 +15,14 @@ interface TelegramActionInterface
     public function key(): string;
 
     /**
-     * Handle the action's logic when invoked.
+     * Set the chat ID for this action.
      */
-    public function handle(): void;
+    public function setChatId(int $chatId): void;
 
     /**
      * Get the chat ID associated with this action.
      */
     public function getChatId(): int;
-
-    /**
-     * Set the chat ID for this action.
-     */
-    public function setChatId(int $chatId): void;
 
     /**
      * Get the message text to send to the Telegram bot.
@@ -40,4 +35,9 @@ interface TelegramActionInterface
      * Return null if no markup is needed.
      */
     public function replyMarkup(): mixed;
+
+    /**
+     * Handle the action's logic when invoked.
+     */
+    public function handle(): mixed;
 }
