@@ -2,15 +2,17 @@
 
 namespace Aboutnima\Telegram\Actions;
 
-use Aboutnima\Telegram\Contracts\TelegramActionInterface;
+use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 /**
  * Base class for all Telegram actions.
  * Provides default implementations for message sending settings.
  */
-abstract class BaseTelegramAction implements TelegramActionInterface
+abstract class BaseBaseTelegramAction implements BaseTelegramActionInterface
 {
+    protected string $key;
+
     /**
      * Telegram chat ID to send the message to.
      */
@@ -75,7 +77,7 @@ abstract class BaseTelegramAction implements TelegramActionInterface
         ];
 
         $markup = $this->replyMarkup();
-        if (blank($markup) || (is_array($markup) && count($markup) === 0)) {
+        if (! blank($markup)) {
             $payload['reply_markup'] = $markup;
         }
 

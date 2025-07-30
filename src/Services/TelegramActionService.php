@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Aboutnima\Telegram\Services;
 
-use Aboutnima\Telegram\Contracts\TelegramActionInterface;
+use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -24,7 +24,7 @@ final class TelegramActionService
     /**
      * Registered Telegram action classes indexed by their unique keys.
      *
-     * @var array<string, class-string<TelegramActionInterface>>
+     * @var array<string, class-string<BaseTelegramActionInterface>>
      */
     private array $actions = [];
 
@@ -61,14 +61,14 @@ final class TelegramActionService
             if (! $reflection->isInstantiable()) {
                 continue;
             }
-            if (! $reflection->implementsInterface(TelegramActionInterface::class)) {
+            if (! $reflection->implementsInterface(BaseTelegramActionInterface::class)) {
                 continue;
             }
 
-            /** @var TelegramActionInterface $instance */
+            /** @var BaseTelegramActionInterface $instance */
             $instance = app($className);
 
-            $this->actions[$instance->key()] = $className;
+            $this->actions[$instance->getKey()] = $className;
         }
     }
 
@@ -89,7 +89,7 @@ final class TelegramActionService
     /**
      * Return all registered actions (mostly useful for debugging or introspection).
      *
-     * @return array<string, class-string<TelegramActionInterface>>
+     * @return array<string, class-string<BaseTelegramActionInterface>>
      */
     public function actions(): array
     {
@@ -99,7 +99,7 @@ final class TelegramActionService
     /**
      * Get the registered action key for the given action class name.
      *
-     * @param  class-string<TelegramActionInterface>  $class
+     * @param  class-string<BaseTelegramActionInterface>  $class
      * @return string
      *
      * @throws \InvalidArgumentException if the class is not registered.
@@ -140,7 +140,7 @@ final class TelegramActionService
             }
         }
 
-        /** @var TelegramActionInterface $action */
+        /** @var BaseTelegramActionInterface $action */
         $action = app($this->actions[$key]);
         $action->setChatId($this->getChatId());
 

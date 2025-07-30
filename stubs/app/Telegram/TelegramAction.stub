@@ -7,18 +7,23 @@ use Aboutnima\Telegram\Actions\BaseTelegramAction;
 final class {{ class }} extends BaseTelegramAction
 {
     /**
+     * The unique key of this action.
+     * Used to link this action to other actions via callback_data.
+     */
+    protected string $key = '{{ key }}';
+
+    /**
      * Indicates whether the message sent by this action should be deleted
      * before the next action is executed.
      */
     protected bool $deleteOnNextAction = false;
 
     /**
-     * The unique key of this action.
-     * Used to link this action to other actions via callback_data.
+     * Get the action key.
      */
-    public function key(): string
+    public function getKey(): string
     {
-        return '{{ key }}';
+        return $this->key;
     }
 
     /**

@@ -7,12 +7,12 @@ use Telegram\Bot\Keyboard\Keyboard;
 /**
  * Interface that defines the contract for a Telegram action handler.
  */
-interface TelegramActionInterface
+interface BaseTelegramActionInterface
 {
     /**
      * Get the unique key identifying this action.
      */
-    public function key(): string;
+    public function getKey(): string;
 
     /**
      * Set the chat ID for this action.
