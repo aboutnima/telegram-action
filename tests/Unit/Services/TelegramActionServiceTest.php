@@ -3,7 +3,7 @@
 use Aboutnima\TelegramAction\Services\TelegramActionService;
 
 beforeEach(function (): void {
-    // Create `ZoomService` instance and request access-token
+    // Create `TelegramActionService` instance
     $this->telegramAction = TelegramActionService::default();
 });
 

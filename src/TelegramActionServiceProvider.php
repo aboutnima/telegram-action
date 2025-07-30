@@ -2,7 +2,6 @@
 
 namespace Aboutnima\TelegramAction;
 
-use Aboutnima\TelegramAction\Auth\ZoomTokenManager;
 use Aboutnima\TelegramAction\Services\TelegramActionService;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,7 +12,7 @@ class TelegramActionServiceProvider extends ServiceProvider
         // Merge the configuration file
         $this->mergeConfigFrom(__DIR__.'/../config/telegram-action.php', 'telegram-action');
 
-        // Register the ZoomService singleton and define TokenManager class with data
+        // Register the TelegramAction singleton and define TokenManager class with data
         $this->app->singleton('telegram-action', fn (): TelegramActionService => new TelegramActionService());
     }
 

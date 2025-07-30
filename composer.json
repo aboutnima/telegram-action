@@ -35,7 +35,7 @@
                 "Aboutnima\\TelegramAction\\TelegramActionServiceProvider"
             ],
             "aliases": {
-                "Zoom": "Aboutnima\\TelegramAction\\Facades\\Zoom"
+                "TelegramAction": "Aboutnima\\TelegramAction\\Facades\\TelegramAction"
             }
         }
     },
