@@ -10,34 +10,50 @@ class InstallTelegramActionCommand extends Command
 {
     protected $signature = 'telegram-action:install';
 
-    protected $description = 'Publish telegram config and create StartTelegramAction';
+    protected $description = 'Publish the Telegram config file and generate the default StartAction class';
 
     public function handle(): void
     {
-        // Publish config file
-        $this->info('Publishing config...');
+        $this->publishConfig();
+
+        $this->createStartAction();
+
+        $this->info('✅ Telegram Action installed successfully!');
+    }
+
+    /**
+     * Publish the Telegram Action package configuration file.
+     */
+    protected function publishConfig(): void
+    {
+        $this->info('📦 Publishing config...');
 
         Artisan::call('vendor:publish', [
             '--tag' => 'telegram-action-config',
-            '--force' => true
+            '--force' => true,
         ]);
 
         $this->info('✅ Config published to config/telegram-action.php');
+    }
 
-        // Create initial StartTelegramAction class
-        $actionPath = app_path('Telegram/StartTelegramAction.php');
-        if (!File::exists($actionPath)) {
-            $this->info('Creating StartTelegramAction...');
+    /**
+     * Generate the default StartAction class if it doesn't already exist.
+     */
+    protected function createStartAction(): void
+    {
+        $actionPath = app_path('Telegram/StartAction.php');
 
-            Artisan::call('telegram:create-action', [
-                'name' => 'StartTelegramAction'
-            ]);
-
-            $this->info('✅ StartTelegramAction created at /app/Telegram');
-        } else {
-            $this->warn('⚠️ StartTelegramAction already exists, skipped.');
+        if (File::exists($actionPath)) {
+            $this->warn('⚠️ StartAction already exists, skipped.');
+            return;
         }
 
-        $this->info('✅Telegram Action installed successfully!');
+        $this->info('🛠 Creating StartAction...');
+
+        Artisan::call('telegram:create-action', [
+            'name' => 'StartAction',
+        ]);
+
+        $this->info('✅ StartAction created at /app/Telegram');
     }
 }

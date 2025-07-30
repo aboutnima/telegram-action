@@ -7,15 +7,31 @@ use Aboutnima\Telegram\Contracts\TelegramActionInterface;
 final class {{ class }} implements TelegramActionInterface
 {
     /**
-     * The unique name of this action.
-     * It is used to identify and link actions together (e.g., via callback_data).
+     * The unique key of this action.
+     * Used to link this action to other actions via callback_data.
      */
-    public string $key = '{{ key }}';
+    protected string $key = '{{ key }}';
 
     /**
-     * The text message that the Telegram bot will send when this action is triggered.
+     * The message text that the Telegram bot will send when this action is triggered.
      */
-    public string $text = '{{ text }}';
+    protected string $text = '{{ text }}';
+
+    /**
+     * Get the unique key of the action.
+     */
+    public function key(): string
+    {
+        return $this->key;
+    }
+
+    /**
+     * Get the message text for this action.
+     */
+    public function text(): string
+    {
+        return $this->text;
+    }
 
     /**
      * Handle the incoming Telegram update.
