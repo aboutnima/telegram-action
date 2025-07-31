@@ -21,11 +21,6 @@ final class TelegramActionService
     private ?int $chatId = null;
 
     /**
-     * Current user ID extracted from the incoming update.
-     */
-    private ?int $userId = null;
-
-    /**
      * Registered Telegram action classes indexed by their unique keys.
      *
      * @var array<string, class-string<BaseTelegramActionInterface>>
@@ -107,20 +102,6 @@ final class TelegramActionService
     }
 
     /**
-     * Get the current user ID.
-     *
-     * @throws \RuntimeException if user ID is not set.
-     */
-    public function getUserId(): int
-    {
-        if ($this->userId === null) {
-            throw new \RuntimeException('User ID has not been set before calling getUserId().');
-        }
-
-        return $this->userId;
-    }
-
-    /**
      * Return all registered actions (mostly useful for debugging or introspection).
      *
      * @return array<string, class-string<BaseTelegramActionInterface>>
@@ -172,10 +153,10 @@ final class TelegramActionService
             $previousAction = app($this->actions[$previousState['action_key']]);
 
             if ($previousAction->getDeleteOnNextAction()) {
-                //                Telegram::deleteMessage(
-                //                    'chat_id' => $this->getChatId(),
-                //                    'message_id' => $previousState['message_id'],
-                //                ]);
+                Telegram::deleteMessage([
+                    'chat_id' => $this->getChatId(),
+                    'message_id' => $previousState['message_id'],
+                ]);
             }
         }
 
@@ -267,7 +248,6 @@ final class TelegramActionService
         $callback = $update->getCallbackQuery();
         $this->chatId = $message->getChat()->getId();
         $text = $message->getText();
-        $this->userId = $message->getFrom()->getId();
         $actionKey = $text;
 
         if ($text === '/start') {
