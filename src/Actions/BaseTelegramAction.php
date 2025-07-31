@@ -4,6 +4,7 @@ namespace Aboutnima\Telegram\Actions;
 
 use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
 use Aboutnima\Telegram\Facades\TelegramAction;
+use Illuminate\Support\Arr;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
@@ -87,9 +88,13 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     /**
      * Get the payload data for this action.
      */
-    public function getPayload(): array
+    public function getPayload(string | int $key, mixed $default = null): mixed
     {
-        return $this->payload;
+        if (Arr::exists($this->payload, $key)) {
+            return $this->payload[$key];
+        }
+
+        return $default;
     }
 
     /**

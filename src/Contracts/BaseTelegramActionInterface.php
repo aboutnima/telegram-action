@@ -36,7 +36,7 @@ interface BaseTelegramActionInterface
     /**
      * Get the payload assigned to this action.
      */
-    public function getPayload(): array;
+    public function getPayload(string | int $key, mixed $default = null): mixed;
 
     /**
      * Attach payload to this action and return an updated key.
