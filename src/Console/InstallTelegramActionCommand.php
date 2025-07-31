@@ -32,7 +32,7 @@ class InstallTelegramActionCommand extends Command
         $this->info('📦 Publishing telegram config...');
 
         $telegramConfigPath = config_path('telegram.php');
-        if (!File::exists($telegramConfigPath)) {
+        if (! File::exists($telegramConfigPath)) {
             Artisan::call('vendor:publish', [
                 '--tag' => 'telegram-config',
             ]);
@@ -60,6 +60,7 @@ class InstallTelegramActionCommand extends Command
 
         if (File::exists($actionPath)) {
             $this->warn('⚠️ StartAction already exists, skipped.');
+
             return config('telegram-action.start_request_key', 'start');
         }
 
@@ -86,6 +87,7 @@ class InstallTelegramActionCommand extends Command
 
         if (File::exists($actionPath)) {
             $this->warn('⚠️ UnsupportedRequestAction already exists, skipped.');
+
             return config('telegram-action.unsupported_request_key', 'unsupported');
         }
 
@@ -110,8 +112,9 @@ class InstallTelegramActionCommand extends Command
     {
         $configPath = config_path('telegram-action.php');
 
-        if (!File::exists($configPath)) {
+        if (! File::exists($configPath)) {
             $this->error('❌ telegram-action.php config file not found.');
+
             return;
         }
 
@@ -119,7 +122,7 @@ class InstallTelegramActionCommand extends Command
 
         $newConfig = $config;
 
-        if (!Str::contains($config, "'start_request_key'")) {
+        if (! Str::contains($config, "'start_request_key'")) {
             $newConfig = preg_replace(
                 '/return\s+\[([\s\S]*?)(\];)/',
                 "return [\n    'start_request_key' => '{$startKey}',\n    'unsupported_request_key' => '{$unsupportedKey}',\n$1$2",
@@ -135,7 +138,7 @@ class InstallTelegramActionCommand extends Command
             $newConfig = preg_replace(
                 "/'unsupported_request_key'\s*=>\s*'[^']*'/",
                 "'unsupported_request_key' => '{$unsupportedKey}'",
-                $newConfig
+                (string) $newConfig
             );
         }
 

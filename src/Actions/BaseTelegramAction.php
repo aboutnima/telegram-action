@@ -4,8 +4,6 @@ namespace Aboutnima\Telegram\Actions;
 
 use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
 use Aboutnima\Telegram\Facades\TelegramAction;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
@@ -137,11 +135,11 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
         $inline = $this->inlineKeyboardMarkup();
 
         // Prioritize replyKeyboardMarkup if present
-        if (!blank($reply)) {
+        if (! blank($reply)) {
             $keyboard = Keyboard::make();
 
             // Optional: include inline_keyboard too if it's set
-            if (!blank($inline)) {
+            if (! blank($inline)) {
                 $keyboard = Keyboard::make([
                     'inline_keyboard' => $inline,
                 ]);
@@ -155,7 +153,7 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
         }
 
         // Fallback to inlineKeyboardMarkup only
-        if (!blank($inline)) {
+        if (! blank($inline)) {
             return Keyboard::make([
                 'inline_keyboard' => $inline,
             ]);

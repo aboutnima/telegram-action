@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Aboutnima\Telegram\Services;
 
 use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use ReflectionClass;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Objects\Update;
 
@@ -59,24 +57,26 @@ final class TelegramActionService
         );
 
         foreach ($iterator as $file) {
-            if (!$file->isFile() || $file->getExtension() !== 'php') {
+            if (! $file->isFile()) {
                 continue;
             }
-
-            $relativePath = str_replace($actionPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
+            $relativePath = str_replace($actionPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
             $classPath = str_replace([DIRECTORY_SEPARATOR, '.php'], ['\\', ''], $relativePath);
-            $className = $namespace . '\\' . $classPath;
+            $className = $namespace.'\\'.$classPath;
 
-            if (!class_exists($className)) {
+            if (! class_exists($className)) {
                 continue;
             }
 
             $reflection = new \ReflectionClass($className);
-            if (!$reflection->isInstantiable()) {
+            if (! $reflection->isInstantiable()) {
                 continue;
             }
 
-            if (!$reflection->implementsInterface(\Aboutnima\Telegram\Contracts\BaseTelegramActionInterface::class)) {
+            if (! $reflection->implementsInterface(\Aboutnima\Telegram\Contracts\BaseTelegramActionInterface::class)) {
                 continue;
             }
 
@@ -115,7 +115,6 @@ final class TelegramActionService
      * Get the registered action key for the given action class name.
      *
      * @param  class-string<BaseTelegramActionInterface>  $class
-     * @return string
      *
      * @throws \InvalidArgumentException if the class is not registered.
      */
@@ -149,20 +148,21 @@ final class TelegramActionService
 
         if (
             isset($previousState['action_key'], $this->actions[$previousState['action_key']]) &&
-            !blank($previousState['message_id'])
+            ! blank($previousState['message_id'])
         ) {
             $previousAction = app($this->actions[$previousState['action_key']]);
 
             if ($previousAction->getDeleteOnNextAction()) {
-                Telegram::deleteMessage([
-                    'chat_id' => $this->getChatId(),
-                    'message_id' => $previousState['message_id'],
-                ]);
+                //                Telegram::deleteMessage(
+                //                    'chat_id' => $this->getChatId(),
+                //                    'message_id' => $previousState['message_id'],
+                //                ]);
             }
         }
 
         /**
          * Load action
+         *
          * @var BaseTelegramActionInterface $action
          */
         $action = app($this->actions[$key]);
@@ -178,7 +178,7 @@ final class TelegramActionService
      *
      * This method completely replaces the existing cache for the current chat ID.
      *
-     * @param array $payload The data to store in cache.
+     * @param  array  $payload  The data to store in cache.
      */
     public function putCache(array $payload): void
     {
@@ -191,13 +191,13 @@ final class TelegramActionService
      * This will preserve previously stored data and only overwrite the keys
      * that exist in the provided payload.
      *
-     * @param array $payload The new data to merge into the cached payload.
+     * @param  array  $payload  The new data to merge into the cached payload.
      */
     public function updateCache(array $payload): void
     {
         $this->putCache([
             ...$this->getCache(),
-            ...$payload
+            ...$payload,
         ]);
     }
 
@@ -220,7 +220,7 @@ final class TelegramActionService
 
         Cache::put($payloadCacheKeyName, $payload, now()->addMinutes(5));
 
-        return $key . ':' . $payloadCacheKeyName;
+        return $key.':'.$payloadCacheKeyName;
     }
 
     /**
@@ -252,9 +252,9 @@ final class TelegramActionService
 
         if ($text === '/start') {
             $actionKey = config('telegram-action.start_request_key');
-        } else if ($callback) {
+        } elseif ($callback) {
             $data = $callback->getData();
-            [$actionKey, $payloadKey] = array_pad(explode(':', $data, 2), 2, null);
+            [$actionKey, $payloadKey] = array_pad(explode(':', (string) $data, 2), 2, null);
         }
 
         $response = $this->callAction($actionKey, $payloadKey);
