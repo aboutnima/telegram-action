@@ -10,13 +10,13 @@ class InstallTelegramActionCommand extends Command
 {
     protected $signature = 'telegram-action:install';
 
-    protected $description = 'Publish the Telegram config file and generate the default StartAction class';
+    protected $description = 'Publish the Telegram config file and generate the default StartAction and UnsupportedRequestAction classes';
 
     public function handle(): void
     {
         $this->publishConfig();
-
         $this->createStartAction();
+        $this->createUnsupportedRequestAction();
 
         $this->info('✅ Telegram Action installed successfully!');
     }
@@ -26,15 +26,19 @@ class InstallTelegramActionCommand extends Command
      */
     protected function publishConfig(): void
     {
-        // Publish telegram sdk package config
         $this->info('📦 Publishing telegram config...');
 
-        Artisan::call('vendor:publish', [
-            '--tag' => 'telegram-config',
-            '--force' => true,
-        ]);
+        // Only publish telegram-config if it doesn't exist
+        $telegramConfigPath = config_path('telegram.php');
+        if (!File::exists($telegramConfigPath)) {
+            Artisan::call('vendor:publish', [
+                '--tag' => 'telegram-config',
+            ]);
+            $this->info('✅ telegram.php published to config/');
+        } else {
+            $this->warn('⚠️ telegram.php already exists, skipping publish.');
+        }
 
-        // Publish telegram action package config
         $this->info('📦 Publishing telegram action config...');
 
         Artisan::call('vendor:publish', [
@@ -42,7 +46,7 @@ class InstallTelegramActionCommand extends Command
             '--force' => true,
         ]);
 
-        $this->info('✅ Config published to config/telegram-action.php');
+        $this->info('✅ telegram-action.php published to config/');
     }
 
     /**
@@ -54,7 +58,6 @@ class InstallTelegramActionCommand extends Command
 
         if (File::exists($actionPath)) {
             $this->warn('⚠️ StartAction already exists, skipped.');
-
             return;
         }
 
@@ -66,5 +69,27 @@ class InstallTelegramActionCommand extends Command
         ]);
 
         $this->info('✅ StartAction created at /app/Telegram');
+    }
+
+    /**
+     * Generate the default UnsupportedRequestAction class if it doesn't already exist.
+     */
+    protected function createUnsupportedRequestAction(): void
+    {
+        $actionPath = app_path('Telegram/UnsupportedRequestAction.php');
+
+        if (File::exists($actionPath)) {
+            $this->warn('⚠️ UnsupportedRequestAction already exists, skipped.');
+            return;
+        }
+
+        $this->info('🛠 Creating UnsupportedRequestAction...');
+
+        Artisan::call('telegram-action:create-action', [
+            'name' => 'UnsupportedRequestAction',
+            'key' => 'unsupported',
+        ]);
+
+        $this->info('✅ UnsupportedRequestAction created at /app/Telegram');
     }
 }
