@@ -240,6 +240,8 @@ final class TelegramActionService
         } else if ($callback) {
             $data = $callback->getData();
             [$actionKey, $payloadKey] = array_pad(explode(':', $data, 2), 2, null);
+        } else {
+            $actionKey = $text;
         }
 
         if (! blank($actionKey)) {
