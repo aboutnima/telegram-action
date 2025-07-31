@@ -9,33 +9,48 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 
 /**
  * Base class for all Telegram actions.
- * Provides default implementations for message sending settings.
+ * Provides structure for setting message, keyboard, and payload logic.
  */
 abstract class BaseTelegramAction implements BaseTelegramActionInterface
 {
     /**
-     * Action identifier
+     * The unique identifier key for this action.
      */
-    protected string $key;
+    protected string $key = '';
 
     /**
      * Indicates whether the message sent by this action should be deleted
-     * before the next action is executed
+     * before the next action is executed.
      */
-    protected bool $deleteOnNextAction;
+    protected bool $deleteOnNextAction = false;
 
     /**
-     * Automatically set to true when a payload is set for the next action.
+     * Used when setting payload for the next action via withPayload().
      */
-    private ?string $nextActionKeyNameWithPayload = null;
+    protected ?string $nextActionKeyNameWithPayload = null;
 
     /**
-     * Stores the payload received from the previous action.
+     * Payload data received from a previous action.
      */
     private array $payload = [];
 
     /**
-     * Resolve an instance of the action via the service container.
+     * Message text to send to the user.
+     */
+    protected string $message = '';
+
+    /**
+     * Inline keyboard markup structure.
+     */
+    protected array $inlineKeyboardMarkup = [];
+
+    /**
+     * Reply keyboard markup structure.
+     */
+    protected array $replyKeyboardMarkup = [];
+
+    /**
+     * Resolve an instance of this action via the service container.
      */
     public static function make(): self
     {
@@ -43,35 +58,26 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     }
 
     /**
-     * Get the action key.
+     * Get the action key, including payload reference if set.
      */
     public function getKey(): string
     {
-        if (is_null($this->nextActionKeyNameWithPayload)) {
-            return $this->key;
-        }
-
-        return $this->nextActionKeyNameWithPayload;
+        return $this->nextActionKeyNameWithPayload ?? $this->key;
     }
 
     /**
-     * Get the current chat ID.
+     * Set payload to be sent to the next action and generate a unique key.
      */
-    public function getChatId(): int
+    public function withPayload(array $payload): self
     {
-        return TelegramAction::getChatId();
+        $newKeyName = TelegramAction::putPayloadCache($this->key, $payload);
+        $this->nextActionKeyNameWithPayload = $newKeyName;
+
+        return $this;
     }
 
     /**
-     * Get deleteOnNextAction value
-     */
-    public function getDeleteOnNextAction(): bool
-    {
-        return $this->deleteOnNextAction;
-    }
-
-    /**
-     * Set the current payload.
+     * Set the payload data for this action.
      */
     public function setPayload(array $payload): void
     {
@@ -79,7 +85,7 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     }
 
     /**
-     * Get the current payload.
+     * Get the payload data for this action.
      */
     public function getPayload(): array
     {
@@ -87,59 +93,67 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     }
 
     /**
-     * Make action with payload
+     * Get the current Telegram chat ID.
      */
-    public function withPayload(array $payload): self
+    public function getChatId(): int
     {
-        $newKeyName = TelegramAction::putPayloadCache($this->key, $payload);
-
-        $this->nextActionKeyNameWithPayload = $newKeyName;
-
-        return $this;
+        return TelegramAction::getChatId();
     }
 
     /**
-     * Get the message text to send.
-     * Override this method to customize the message.
+     * Get whether the message should be deleted before the next action.
      */
-    public function message(): string
+    public function getDeleteOnNextAction(): bool
     {
-        return '';
+        return $this->deleteOnNextAction;
     }
 
     /**
-     * Get the inline keyboard markup
-     * Override this method to customize the inline keyboard markup.
+     * Get the message text that will be sent.
      */
-    public function inlineKeyboardMarkup(): array
+    public function getMessage(): string
     {
-        return [];
+        return $this->message;
     }
 
     /**
-     * Get the reply keyboard markup
-     * Override this method to customize the reply keyboard markup.
+     * Get the inline keyboard markup array.
      */
-    public function replyKeyboardMarkup(): array
+    public function getInlineKeyboardMarkup(): array
     {
-        return [];
+        return $this->inlineKeyboardMarkup;
     }
 
     /**
-     * Generate the final keyboard markup based on reply and inline keyboards.
-     * Prefers reply markup if available; falls back to inline markup otherwise.
+     * Get the reply keyboard markup array.
+     */
+    public function getReplyKeyboardMarkup(): array
+    {
+        return $this->replyKeyboardMarkup;
+    }
+
+    /**
+     * Prepare action logic before sending message (e.g. set message or keyboard).
+     * Override this in child classes.
+     */
+    public function prepare(): void
+    {
+        // To be implemented in child actions
+    }
+
+    /**
+     * Generate the Telegram reply markup (keyboard).
+     * Prefers reply markup if set, otherwise falls back to inline keyboard.
      */
     public function generateReplyMarkup(): mixed
     {
-        $reply = $this->replyKeyboardMarkup();
-        $inline = $this->inlineKeyboardMarkup();
+        $reply = $this->getReplyKeyboardMarkup();
+        $inline = $this->getInlineKeyboardMarkup();
 
-        // Prioritize replyKeyboardMarkup if present
-        if (! blank($reply)) {
+        if (!blank($reply)) {
             $keyboard = Keyboard::make();
 
-            // Optional: include inline_keyboard too if it's set
-            if (! blank($inline)) {
+            if (!blank($inline)) {
                 $keyboard = Keyboard::make([
                     'inline_keyboard' => $inline,
                 ]);
@@ -152,8 +166,7 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
             return $keyboard;
         }
 
-        // Fallback to inlineKeyboardMarkup only
-        if (! blank($inline)) {
+        if (!blank($inline)) {
             return Keyboard::make([
                 'inline_keyboard' => $inline,
             ]);
@@ -163,17 +176,19 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     }
 
     /**
-     * Handle the action: send the message and markup to Telegram.
+     * Handle the action execution: prepare, compose message, and send it.
      */
     public function handle(): mixed
     {
+        $this->prepare();
+
         $payload = [
             'chat_id' => $this->getChatId(),
-            'text' => $this->message(),
+            'text' => $this->getMessage(),
         ];
 
         $markup = $this->generateReplyMarkup();
-        if (! blank($markup)) {
+        if (!blank($markup)) {
             $payload['reply_markup'] = $markup;
         }
 

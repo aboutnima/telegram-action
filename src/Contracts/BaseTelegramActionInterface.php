@@ -2,74 +2,74 @@
 
 namespace Aboutnima\Telegram\Contracts;
 
-use Telegram\Bot\Keyboard\Keyboard;
-
 /**
- * Interface that defines the contract for a Telegram action handler.
+ * Interface for all Telegram actions.
+ * Ensures consistency across custom action classes.
  */
 interface BaseTelegramActionInterface
 {
     /**
-     * Resolve an instance of the action via the service container.
+     * Resolve an instance of the action.
      */
     public static function make(): self;
 
     /**
-     * Get the unique key identifying this action.
+     * Execute any logic before the action is handled.
+     */
+    public function prepare(): void;
+
+    /**
+     * Handle the action and return Telegram response.
+     */
+    public function handle(): mixed;
+
+    /**
+     * Get the action key (with payload reference if available).
      */
     public function getKey(): string;
 
     /**
-     * Get the chat ID associated with this action.
-     */
-    public function getChatId(): int;
-
-    /**
-     * Get deleteOnNextAction value
-     */
-    public function getDeleteOnNextAction(): bool;
-
-    /**
-     * Set the current payload.
+     * Set the payload received from the previous action.
      */
     public function setPayload(array $payload): void;
 
     /**
-     * Get the current payload.
+     * Get the payload assigned to this action.
      */
     public function getPayload(): array;
 
     /**
-     * Make action with payload
+     * Attach payload to this action and return an updated key.
      */
     public function withPayload(array $payload): self;
 
     /**
-     * Get the message text to send to the Telegram bot.
-     * Return null if no message should be sent.
+     * Get the chat ID for the current user.
      */
-    public function message(): string;
+    public function getChatId(): int;
 
     /**
-     * Get the inline keyboard markup
-     * Override this method to customize the inline keyboard markup.
+     * Whether the message should be deleted before the next action.
      */
-    public function inlineKeyboardMarkup(): array;
+    public function getDeleteOnNextAction(): bool;
 
     /**
-     * Get the reply keyboard markup
-     * Override this method to customize the reply keyboard markup.
+     * Get the message text to send.
      */
-    public function replyKeyboardMarkup(): array;
+    public function getMessage(): string;
 
     /**
-     * Generate the final keyboard markup based on reply and inline keyboards.
-     * Prefers reply markup if available; falls back to inline markup otherwise.
+     * Get the inline keyboard markup for the message.
+     */
+    public function getInlineKeyboardMarkup(): array;
+
+    /**
+     * Get the reply keyboard markup for the message.
+     */
+    public function getReplyKeyboardMarkup(): array;
+
+    /**
+     * Generate the final keyboard markup to attach to the message.
      */
     public function generateReplyMarkup(): mixed;
-
-    /**
-     * Handle the action's logic when invoked.
-     */
-    public function handle(): mixed;
 }

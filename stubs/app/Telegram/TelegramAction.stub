@@ -13,38 +13,30 @@ final class {{ class }} extends BaseTelegramAction
     protected string $key = '{{ key }}';
 
     /**
-     * Indicates whether the message sent by this action should be deleted
-     * before the next action is executed.
+     * Whether the message should be deleted before the next action.
      */
     protected bool $deleteOnNextAction = false;
 
     /**
-     * Get the message text for this action.
+     * Message text to send to the user.
      */
-    public function message(): string
-    {
-        return '{{ message }}';
-    }
+    protected string $message = '{{ message }}';
 
     /**
-     * Get the inline keyboard markup
-     * Override this method to customize the inline keyboard markup.
-     * Notice: Remember you can use only on markup. Using both of them at the same time
-     * is not supported by telegram.
+     * Reply keyboard markup structure.
      */
-    public function inlineKeyboardMarkup(): array
-    {
-        return [];
-    }
+    protected array $replyKeyboardMarkup = [];
 
     /**
-     * Get the reply keyboard markup
-     * Override this method to customize the reply keyboard markup.
-     * Notice: Remember you can use only on markup. Using both of them at the same time
-     * is not supported by telegram.
+     * Inline keyboard markup structure.
      */
-    public function replyKeyboardMarkup(): array
+    protected array $inlineKeyboardMarkup = [];
+
+    /**
+     * Prepare the action by performing logic (optional).
+     */
+    public function prepare(): void
     {
-        return [];
+        // Optional: override to set dynamic content
     }
 }
