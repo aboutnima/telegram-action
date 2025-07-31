@@ -54,22 +54,33 @@ final class TelegramActionService
         $actionPath = app_path('Telegram');
         $namespace = 'App\\Telegram';
 
-        foreach (glob($actionPath.'/*.php') as $file) {
-            $className = $namespace.'\\'.Str::replaceLast('.php', '', basename($file));
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($actionPath)
+        );
 
-            if (! class_exists($className)) {
+        foreach ($iterator as $file) {
+            if (!$file->isFile() || $file->getExtension() !== 'php') {
                 continue;
             }
 
-            $reflection = new ReflectionClass($className);
-            if (! $reflection->isInstantiable()) {
-                continue;
-            }
-            if (! $reflection->implementsInterface(BaseTelegramActionInterface::class)) {
+            $relativePath = str_replace($actionPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $classPath = str_replace([DIRECTORY_SEPARATOR, '.php'], ['\\', ''], $relativePath);
+            $className = $namespace . '\\' . $classPath;
+
+            if (!class_exists($className)) {
                 continue;
             }
 
-            /** @var BaseTelegramActionInterface $instance */
+            $reflection = new \ReflectionClass($className);
+            if (!$reflection->isInstantiable()) {
+                continue;
+            }
+
+            if (!$reflection->implementsInterface(\Aboutnima\Telegram\Contracts\BaseTelegramActionInterface::class)) {
+                continue;
+            }
+
+            /** @var \Aboutnima\Telegram\Contracts\BaseTelegramActionInterface $instance */
             $instance = app($className);
 
             $this->actions[$instance->getKey()] = $className;
