@@ -2,7 +2,7 @@
     "name": "aboutnima/telegram-action",
     "description": "A Laravel package for building modular Telegram bots using action-based architecture. Define bot actions with unique keys, generate them via Artisan commands, and handle inline keyboard callbacks with ease.",
     "type": "library",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "authors": [
         {
