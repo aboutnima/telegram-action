@@ -10,6 +10,11 @@ use Telegram\Bot\Keyboard\Keyboard;
 interface BaseTelegramActionInterface
 {
     /**
+     * Resolve an instance of the action via the service container.
+     */
+    public static function make(): self;
+
+    /**
      * Get the unique key identifying this action.
      */
     public function getKey(): string;
@@ -35,9 +40,9 @@ interface BaseTelegramActionInterface
     public function getPayload(): array;
 
     /**
-     * Set payload for next action
+     * Make action with payload
      */
-    public function setNextActionPayload(array $payload): self;
+    public function withPayload(array $payload): self;
 
     /**
      * Get the message text to send to the Telegram bot.

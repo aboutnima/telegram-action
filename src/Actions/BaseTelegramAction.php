@@ -36,6 +36,14 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     private array $payload = [];
 
     /**
+     * Resolve an instance of the action via the service container.
+     */
+    public static function make(): self
+    {
+        return app(static::class);
+    }
+
+    /**
      * Get the action key.
      */
     public function getKey(): string
@@ -80,9 +88,9 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     }
 
     /**
-     * Set payload for next action
+     * Make action with payload
      */
-    public function setNextActionPayload(array $payload): self
+    public function withPayload(array $payload): self
     {
         $newKeyName = TelegramAction::putPayloadCache($this->key, $payload);
 
