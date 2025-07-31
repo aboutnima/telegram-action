@@ -147,8 +147,12 @@ final class TelegramActionService
         // Load previous state
         $previousState = $this->getCache();
 
-        if ($previousState && isset($this->actions[$previousState['action_key']])) {
+        if (
+            isset($previousState['action_key'], $this->actions[$previousState['action_key']]) &&
+            !blank($previousState['message_id'])
+        ) {
             $previousAction = app($this->actions[$previousState['action_key']]);
+
             if ($previousAction->getDeleteOnNextAction()) {
                 Telegram::deleteMessage([
                     'chat_id' => $this->getChatId(),
