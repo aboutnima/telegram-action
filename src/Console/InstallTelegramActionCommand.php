@@ -5,6 +5,7 @@ namespace Aboutnima\Telegram\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class InstallTelegramActionCommand extends Command
 {
@@ -15,8 +16,10 @@ class InstallTelegramActionCommand extends Command
     public function handle(): void
     {
         $this->publishConfig();
-        $this->createStartAction();
-        $this->createUnsupportedRequestAction();
+        $startKey = $this->createStartAction();
+        $unsupportedKey = $this->createUnsupportedRequestAction();
+
+        $this->updateTelegramActionConfig($startKey, $unsupportedKey);
 
         $this->info('✅ Telegram Action installed successfully!');
     }
@@ -28,7 +31,6 @@ class InstallTelegramActionCommand extends Command
     {
         $this->info('📦 Publishing telegram config...');
 
-        // Only publish telegram-config if it doesn't exist
         $telegramConfigPath = config_path('telegram.php');
         if (!File::exists($telegramConfigPath)) {
             Artisan::call('vendor:publish', [
@@ -52,44 +54,93 @@ class InstallTelegramActionCommand extends Command
     /**
      * Generate the default StartAction class if it doesn't already exist.
      */
-    protected function createStartAction(): void
+    protected function createStartAction(): string
     {
         $actionPath = app_path('Telegram/StartAction.php');
 
         if (File::exists($actionPath)) {
             $this->warn('⚠️ StartAction already exists, skipped.');
-            return;
+            return config('telegram-action.start_request_key', 'start');
         }
 
         $this->info('🛠 Creating StartAction...');
 
+        $randomKey = Str::random(16);
+
         Artisan::call('telegram-action:create-action', [
             'name' => 'StartAction',
-            'key' => 'start',
+            'key' => $randomKey,
         ]);
 
         $this->info('✅ StartAction created at /app/Telegram');
+
+        return $randomKey;
     }
 
     /**
      * Generate the default UnsupportedRequestAction class if it doesn't already exist.
      */
-    protected function createUnsupportedRequestAction(): void
+    protected function createUnsupportedRequestAction(): string
     {
         $actionPath = app_path('Telegram/UnsupportedRequestAction.php');
 
         if (File::exists($actionPath)) {
             $this->warn('⚠️ UnsupportedRequestAction already exists, skipped.');
-            return;
+            return config('telegram-action.unsupported_request_key', 'unsupported');
         }
 
         $this->info('🛠 Creating UnsupportedRequestAction...');
 
+        $randomKey = Str::random(16);
+
         Artisan::call('telegram-action:create-action', [
             'name' => 'UnsupportedRequestAction',
-            'key' => 'unsupported',
+            'key' => $randomKey,
         ]);
 
         $this->info('✅ UnsupportedRequestAction created at /app/Telegram');
+
+        return $randomKey;
+    }
+
+    /**
+     * Add start/unsupported keys into telegram-action config file.
+     */
+    protected function updateTelegramActionConfig(string $startKey, string $unsupportedKey): void
+    {
+        $configPath = config_path('telegram-action.php');
+
+        if (!File::exists($configPath)) {
+            $this->error('❌ telegram-action.php config file not found.');
+            return;
+        }
+
+        $config = File::get($configPath);
+
+        $newConfig = $config;
+
+        if (!Str::contains($config, "'start_request_key'")) {
+            $newConfig = preg_replace(
+                '/return\s+\[([\s\S]*?)(\];)/',
+                "return [\n    'start_request_key' => '{$startKey}',\n    'unsupported_request_key' => '{$unsupportedKey}',\n$1$2",
+                $config
+            );
+        } else {
+            $newConfig = preg_replace(
+                "/'start_request_key'\s*=>\s*'[^']*'/",
+                "'start_request_key' => '{$startKey}'",
+                $newConfig
+            );
+
+            $newConfig = preg_replace(
+                "/'unsupported_request_key'\s*=>\s*'[^']*'/",
+                "'unsupported_request_key' => '{$unsupportedKey}'",
+                $newConfig
+            );
+        }
+
+        File::put($configPath, $newConfig);
+
+        $this->info('📝 telegram-action.php updated with start and unsupported keys.');
     }
 }

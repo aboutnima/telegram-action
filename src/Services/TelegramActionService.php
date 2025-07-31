@@ -129,8 +129,8 @@ final class TelegramActionService
     public function callAction(string $key, ?string $payloadKey): mixed
     {
         // Check if action is exists
-        if (! isset($this->actions[$key])) {
-            throw new \InvalidArgumentException("No registered Telegram action for key: '{$key}'.");
+        if (blank($key) || ! isset($this->actions[$key])) {
+            $key = config('telegram-action.unsupported_request_key');
         }
 
         // Load previous state
@@ -227,30 +227,26 @@ final class TelegramActionService
      */
     public function handleRequest(Update $update): void
     {
-        $actionKey = '';
         $payloadKey = null;
 
         $message = $update->getMessage();
         $callback = $update->getCallbackQuery();
         $this->chatId = $message->getChat()->getId();
         $text = $message->getText();
+        $actionKey = $text;
 
         if ($text === '/start') {
-            $actionKey = 'start';
+            $actionKey = config('telegram-action.start_request_key');
         } else if ($callback) {
             $data = $callback->getData();
             [$actionKey, $payloadKey] = array_pad(explode(':', $data, 2), 2, null);
-        } else {
-            $actionKey = $text;
         }
 
-        if (! blank($actionKey)) {
-            $response = $this->callAction($actionKey, $payloadKey);
+        $response = $this->callAction($actionKey, $payloadKey);
 
-            $this->putCache([
-                'message_id' => $response->getMessageId(),
-                'action_key' => $actionKey,
-            ]);
-        }
+        $this->putCache([
+            'message_id' => $response->getMessageId(),
+            'action_key' => $actionKey,
+        ]);
     }
 }
