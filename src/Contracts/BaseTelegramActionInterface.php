@@ -51,10 +51,22 @@ interface BaseTelegramActionInterface
     public function message(): string;
 
     /**
-     * Get the reply markup (e.g., keyboard or inline buttons) to send.
-     * Return null if no markup is needed.
+     * Get the inline keyboard markup
+     * Override this method to customize the inline keyboard markup.
      */
-    public function replyMarkup(): mixed;
+    public function inlineKeyboardMarkup(): array;
+
+    /**
+     * Get the reply keyboard markup
+     * Override this method to customize the reply keyboard markup.
+     */
+    public function replyKeyboardMarkup(): array;
+
+    /**
+     * Generate the final keyboard markup based on reply and inline keyboards.
+     * Prefers reply markup if available; falls back to inline markup otherwise.
+     */
+    public function generateReplyMarkup(): mixed;
 
     /**
      * Handle the action's logic when invoked.

@@ -6,6 +6,7 @@ use Aboutnima\Telegram\Contracts\BaseTelegramActionInterface;
 use Aboutnima\Telegram\Facades\TelegramAction;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 /**
@@ -109,12 +110,58 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
     }
 
     /**
-     * Get the reply markup (e.g., inline keyboard).
-     * Override this method to customize the markup.
+     * Get the inline keyboard markup
+     * Override this method to customize the inline keyboard markup.
      */
-    public function replyMarkup(): mixed
+    public function inlineKeyboardMarkup(): array
     {
-        return null;
+        return [];
+    }
+
+    /**
+     * Get the reply keyboard markup
+     * Override this method to customize the reply keyboard markup.
+     */
+    public function replyKeyboardMarkup(): array
+    {
+        return [];
+    }
+
+    /**
+     * Generate the final keyboard markup based on reply and inline keyboards.
+     * Prefers reply markup if available; falls back to inline markup otherwise.
+     */
+    public function generateReplyMarkup(): mixed
+    {
+        $reply = $this->replyKeyboardMarkup();
+        $inline = $this->inlineKeyboardMarkup();
+
+        // Prioritize replyKeyboardMarkup if present
+        if (!blank($reply)) {
+            $keyboard = Keyboard::make();
+
+            // Optional: include inline_keyboard too if it's set
+            if (!blank($inline)) {
+                $keyboard = Keyboard::make([
+                    'inline_keyboard' => $inline,
+                ]);
+            }
+
+            foreach ($reply as $row) {
+                $keyboard->row($row);
+            }
+
+            return $keyboard;
+        }
+
+        // Fallback to inlineKeyboardMarkup only
+        if (!blank($inline)) {
+            return Keyboard::make([
+                'inline_keyboard' => $inline,
+            ]);
+        }
+
+        return [];
     }
 
     /**
@@ -127,7 +174,7 @@ abstract class BaseTelegramAction implements BaseTelegramActionInterface
             'text' => $this->message(),
         ];
 
-        $markup = $this->replyMarkup();
+        $markup = $this->generateReplyMarkup();
         if (! blank($markup)) {
             $payload['reply_markup'] = $markup;
         }

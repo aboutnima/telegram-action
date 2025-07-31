@@ -27,10 +27,24 @@ final class {{ class }} extends BaseTelegramAction
     }
 
     /**
-     * Get the reply markup for this action.
+     * Get the inline keyboard markup
+     * Override this method to customize the inline keyboard markup.
+     * Notice: Remember you can use only on markup. Using both of them at the same time
+     * is not supported by telegram.
      */
-    public function replyMarkup(): mixed
+    public function inlineKeyboardMarkup(): array
     {
-        return null;
+        return [];
+    }
+
+    /**
+     * Get the reply keyboard markup
+     * Override this method to customize the reply keyboard markup.
+     * Notice: Remember you can use only on markup. Using both of them at the same time
+     * is not supported by telegram.
+     */
+    public function replyKeyboardMarkup(): array
+    {
+        return [];
     }
 }
